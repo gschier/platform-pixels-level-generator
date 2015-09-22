@@ -3,6 +3,8 @@ var gm = require('gm');
 var Chance = require('chance');
 var chance = new Chance();
 
+var CONSTANTS = require('./constants');
+
 var Grid = function (w, h) {
     this._width = w;
     this._height = h;
@@ -17,6 +19,7 @@ var Grid = function (w, h) {
     this._lastPosY = null;
     this._lastSide = null;
     this._isHorizontal = true;
+    this._forceHorizontal = false;
 
     this.initialize();
 };
@@ -25,6 +28,7 @@ Grid.TYPE_EMPTY    = '■'.grey;
 Grid.TYPE_PLATFORM = '☐'.green.bold;
 Grid.TYPE_FILL     = '☐'.white.bold;
 Grid.TYPE_DEATH    = '☐'.red.bold;
+Grid.TYPE_START    = '☃'.magenta.bold;
 
 Grid.STATE_INIT           = 0;
 Grid.STATE_START_PLATFORM = 1;
@@ -35,11 +39,19 @@ Grid.SIDE_BOTTOM = [1, 0];
 Grid.SIDE_LEFT   = [0, -1];
 Grid.SIDE_RIGHT  = [0, 1];
 
+Grid.COLORS_VISUAL = {};
+Grid.COLORS_VISUAL[Grid.TYPE_PLATFORM] = '#2A2828';
+Grid.COLORS_VISUAL[Grid.TYPE_FILL] = '#312F2F';
+
+Grid.COLORS_META = {};
+Grid.COLORS_META[Grid.TYPE_DEATH] = '#F00'; // RED
+Grid.COLORS_META[Grid.TYPE_START] = '#F0F'; // TEAL
+
 Grid.prototype.set = function (t, x, y) {
     x = x === undefined ? this._posX : x;
     y = y === undefined ? this._posY : y;
 
-    console.log('SET:', t, x, y);
+    //console.log('SET:', t, x, y);
 
     if (y >= this._height || y < 0 || x >= this._width || x < 0) {
         return;
@@ -109,37 +121,34 @@ Grid.prototype.next = function () {
 };
 
 Grid.prototype.placeEndPlatform = function () {
-    this._isHorizontal = chance.bool({likelihood: 70});
+    this._isHorizontal = chance.bool({likelihood: 60});
+    if (this._forceHorizontal) {
+        this._isHorizontal = true;
+        this._forceHorizontal = false;
+    }
+
     if (!this._isHorizontal) {
-        this.drag(
-            0,
-            chance.integer({min: 1, max: 8})
-        );
+        this.drag(0, CONSTANTS.PLATFORM_HEIGHT());
     } else {
-        this.drag(
-            chance.integer({min: 2, max: 5}),
-            0
-        );
+        this.drag(CONSTANTS.PLATFORM_WIDTH(), 0);
 
         // Fill floor down
-        var platformFloorDepth = chance.integer({min: 4, max: 8});
         this.fill(
             Grid.TYPE_FILL,
             this._lastPosX,
             this._posY - 1,
             this._posX,
-            this._posY - platformFloorDepth - 1
+            this._posY - 1 - CONSTANTS.FLOOR_DEPTH()
         );
 
         // Fill ceil up
-        var platformCeilDepth = chance.integer({min: 4, max: 6});
-        var platformCeilHeight = chance.integer({min: 4, max: 8});
+        var platformCeilHeight = CONSTANTS.CEILING_HEIGHT();
         this.fill(
             Grid.TYPE_FILL,
             this._lastPosX,
             this._posY + platformCeilHeight,
             this._posX,
-            this._posY + platformCeilHeight + platformCeilDepth
+            this._posY + platformCeilHeight + CONSTANTS.CEILING_DEPTH()
         );
     }
 
@@ -147,11 +156,15 @@ Grid.prototype.placeEndPlatform = function () {
 };
 
 Grid.prototype.placeStartPlatform = function () {
-    this.pos(
-        chance.integer({min: 0, max: 2}),
-        chance.integer({min: 2, max: 7})
-    );
+    this.pos(CONSTANTS.START_X(), CONSTANTS.START_Y());
+
+    this._forceHorizontal = true;
+
+    // Set platform
     this.set(Grid.TYPE_PLATFORM);
+
+    // Set start meta point
+    this.set(Grid.TYPE_START, this._posX, this._posY + CONSTANTS.START_OFFSET_Y());
 
     this._state = Grid.STATE_START_PLATFORM;
 };
@@ -164,8 +177,8 @@ Grid.prototype.branch = function () {
 
 Grid.prototype.detach = function () {
     this.move(
-        chance.integer({min: 3, max: 7}),
-        Math.max(-1 * this._posY, chance.integer({min: -3, max: 5}))
+        CONSTANTS.DETACH_DISTANCE_X(),
+        Math.max(-1 * this._posY, CONSTANTS.DETACH_DISTANCE_Y())
     );
 
     this.set(Grid.TYPE_PLATFORM);
@@ -173,6 +186,7 @@ Grid.prototype.detach = function () {
     if (this._isHorizontal) {
 
         // Add death between
+        // Place one space below the last position an current one
         // TODO: Make this work better with vertical platforms
         var minY = Math.min(this._lastPosY, this._posY);
         this.fill(
@@ -180,7 +194,7 @@ Grid.prototype.detach = function () {
             this._lastPosX + 1,
             minY - 1,
             this._posX - 1,
-            minY - 1 - chance.integer({min: 4, max: 7})
+            minY - 1 - CONSTANTS.DEATH_DEPTH()
         );
 
         // Add death ceiling
@@ -216,19 +230,29 @@ Grid.prototype.print = function () {
 };
 
 Grid.prototype.export = function () {
-    var img = gm(200, 400, "#ddff99f3");
-    var t;
+    var img_visual = gm(this._width, this._height, 'transparent');
+    var img_meta = gm(this._width, this._height, 'transparent');
+    var t, c;
     for (var y = this._height - 1; y >= 0.; y--) {
         for (var x = 0; x < this._width; x++) {
             t = this.get(x, y);
 
-            if (t === Grid.TYPE_PLATFORM) {
-                img.fill('#F00');
-                img.drawPoint(x, this._height - y - 1);
+            c = Grid.COLORS_META[t];
+            if (c) {
+                img_meta.fill(c);
+                img_meta.drawPoint(x, this._height - y - 1);
+            }
+
+            c = Grid.COLORS_VISUAL[t];
+            if (c) {
+                img_visual.fill(c);
+                img_visual.drawPoint(x, this._height - y - 1);
             }
         }
     }
-    img.write('foo.png', function (err) { });
+    var path = '/Users/gschier/Workspace/platform-pixels/android/assets/levels/00017__generated';
+    img_meta.write(path + '/meta.png', function (err) { });
+    img_visual.write(path + '/visual.png', function (err) { });
 };
 
 Grid.prototype.initialize = function () {
