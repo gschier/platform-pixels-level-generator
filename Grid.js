@@ -2,6 +2,7 @@
 
 require('colors');
 var constants = require('./constants');
+var pathUtil = require('path');
 
 var gm = require('gm');
 
@@ -126,8 +127,17 @@ class Grid {
                 }
             }
         }
-        img_meta.write(path + '/meta.png', function (err) { });
-        img_visual.write(path + '/visual.png', function (err) { });
+        var metaPath = pathUtil.join(path, 'meta.png');
+        img_meta.write(metaPath, function (err) {
+            if (err) { console.error('Failed to generate ' + metaPath, err); }
+            else { console.log('Generated ', metaPath); }
+        });
+
+        var visualPath = pathUtil.join(path, 'visual.png');
+        img_visual.write(visualPath, function (err) {
+            if (err) { console.error('Failed to generate ' + visualPath, err); }
+            else { console.log('Generated ', visualPath); }
+        });
     }
 }
 
