@@ -1,3 +1,4 @@
+require('colors');
 var Chance = require('chance');
 var chance = new Chance();
 
@@ -7,20 +8,36 @@ function i (min, max) {
     }
 }
 
-module.exports = {
-    START_X:        i(0, 2),
-    START_Y:        i(2, 7),
-    START_OFFSET_Y: i(2, 4),
+var x = {};
 
-    DETACH_DISTANCE_X: i(3,  12),
-    DETACH_DISTANCE_Y: i(-3, 5),
+x.START_X = i(0, 2);
+x.START_Y = i(2, 7);
+x.START_OFFSET_Y = i(2, 4);
 
-    DEATH_DEPTH: i(12, 20),
+x.DETACH_DISTANCE_X = i(3, 12);
+x.DETACH_DISTANCE_Y = i(-3, 5);
 
-    PLATFORM_WIDTH: i(2, 12),
-    PLATFORM_HEIGHT: i(3, 8),
+x.DEATH_DEPTH = i(12, 20);
 
-    FLOOR_DEPTH: i(12, 20),
-    CEILING_DEPTH: i(12, 20),
-    CEILING_HEIGHT: i(8, 12),
-};
+x.PLATFORM_WIDTH = i(2, 12);
+x.PLATFORM_HEIGHT = i(3, 8);
+
+x.FLOOR_DEPTH = i(12, 20);
+x.CEILING_DEPTH = i(12, 20);
+x.CEILING_HEIGHT = i(8, 12);
+
+x.TYPE_EMPTY = '■'.grey;
+x.TYPE_PLATFORM = '☐'.green.bold;
+x.TYPE_FILL= '☐'.white.bold;
+x.TYPE_DEATH = '☐'.red.bold;
+x.TYPE_START = '☃'.magenta.bold;
+
+x.COLORS_VISUAL = {};
+x.COLORS_VISUAL[x.TYPE_PLATFORM] = '#2A2828';
+x.COLORS_VISUAL[x.TYPE_FILL] = '#312F2F';
+
+x.COLORS_META = {};
+x.COLORS_META[x.TYPE_DEATH] = '#F00'; // RED
+x.COLORS_META[x.TYPE_START] = '#F0F'; // TEAL
+
+module.exports = x;

@@ -1,12 +1,8 @@
-var Grid = require('./Grid');
+var Level = require('./Level');
 
 //var grid = new Grid(100, 50);
-var grid = new Grid(200, 80);
-
-for (var i = 0; i < 40; i++) {
-    grid.next();
-}
-
-grid.print();
-grid.export();
+var level = new Level(20, 10);
+level.draw();
+level.print();
+level.saveImage('./export');
 
