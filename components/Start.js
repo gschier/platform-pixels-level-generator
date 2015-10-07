@@ -23,13 +23,20 @@ var constants = require('../constants');
 class Start extends BaseComponent {
     constructor (grid) {
         super(grid);
+
+        this._height = constants.START_HEIGHT();
+        this._width = constants.START_WIDTH();
     }
     draw () {
         // Cut a hole
-        this._grid.fill(constants.TYPE_EMPTY, 1, 1, 6, 6);
+        var x1 = constants.START_X();
+        var y1 = constants.START_Y();
+        var x2 = x1 + constants.START_WIDTH();
+        var y2 = y1 + constants.START_HEIGHT();
+        this._grid.clear(x1, y1, x2, y2);
 
         // Place start position
-        this._grid.set(constants.TYPE_START, 2, 2);
+        this._grid.set(constants.TYPE_START, x1 + 1, y1 + 1);
     }
 }
 

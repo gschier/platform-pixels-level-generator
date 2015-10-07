@@ -14,7 +14,7 @@ class Grid {
         this._state = null;
     }
 
-    initialize(t) {
+    initialize (t) {
         this._grid = [];
 
         for (var y = 0; y < this._height; y++) {
@@ -26,7 +26,7 @@ class Grid {
         }
     }
 
-    set(t, x, y) {
+    set (t, x, y) {
         x = x === undefined ? this._posX : x;
         y = y === undefined ? this._posY : y;
 
@@ -39,7 +39,7 @@ class Grid {
         this._grid[this._height - y - 1][x] = t;
     }
 
-    get(x, y) {
+    get (x, y) {
         if (y >= this._height || y < 0 || x >= this._width || x < 0) {
             return null;
         }
@@ -47,33 +47,11 @@ class Grid {
         return this._grid[this._height - y - 1][x];
     }
 
-    pos(x, y) {
-        console.log('POS:', this._posX, this._posY, '-->', x, y);
-        this._lastPosX = this._posX;
-        this._lastPosY = this._posY;
-        this._posX = x;
-        this._posY = y;
+    clear (x1, y1, x2, y2) {
+        return this.fill(constants.TYPE_EMPTY, x1, y1, x2, y2);
     }
 
-    move(dx, dy) {
-        console.log('MOVE:', dx, dy);
-        this.pos(this._posX + dx, this._posY + dy);
-    }
-
-    drag(dx, dy) {
-        //console.log('DRAG:', dx, dy);
-        var t = this.get(this._posX, this._posY);
-
-        for (var x = this._posX; x <= this._posX + dx; x++) {
-            for (var y = this._posY; y <= this._posY + dy; y++) {
-                this.set(t, x, y);
-            }
-        }
-
-        this.move(dx, dy);
-    }
-
-    fill(t, x1, y1, x2, y2) {
+    fill (t, x1, y1, x2, y2) {
         console.log('Fill:', t, x1, y1, ' --> ', x2, y2);
 
         var xMin = Math.min(x1, x2);
@@ -88,7 +66,7 @@ class Grid {
         }
     }
 
-    print() {
+    print () {
         var r, t;
         for (var y = this._height - 1; y >= 0.; y--) {
             r = '';
@@ -105,7 +83,7 @@ class Grid {
         }
     }
 
-    saveImage(path) {
+    saveImage (path) {
         var img_visual = gm(this._width, this._height, 'transparent');
         var img_meta = gm(this._width, this._height, 'transparent');
         var t, c;
@@ -127,16 +105,25 @@ class Grid {
                 }
             }
         }
+
         var metaPath = pathUtil.join(path, 'meta.png');
         img_meta.write(metaPath, function (err) {
-            if (err) { console.error('Failed to generate ' + metaPath, err); }
-            else { console.log('Generated ', metaPath); }
+            if (err) {
+                console.error('Failed to generate ' + metaPath, err);
+            }
+            else {
+                console.log('Generated ', metaPath);
+            }
         });
 
         var visualPath = pathUtil.join(path, 'visual.png');
         img_visual.write(visualPath, function (err) {
-            if (err) { console.error('Failed to generate ' + visualPath, err); }
-            else { console.log('Generated ', visualPath); }
+            if (err) {
+                console.error('Failed to generate ' + visualPath, err);
+            }
+            else {
+                console.log('Generated ', visualPath);
+            }
         });
     }
 }

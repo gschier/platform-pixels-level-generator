@@ -1,6 +1,7 @@
 "use strict";
 
 var Start = require('./components/Start');
+var Pit = require('./components/Pit');
 var Grid = require('./Grid');
 var constants = require('./constants');
 
@@ -13,6 +14,9 @@ class Level {
     draw () {
         var start = new Start(this._grid);
         start.draw();
+
+        var pit = new Pit(this._grid);
+        pit.draw();
     }
 
     print () {
