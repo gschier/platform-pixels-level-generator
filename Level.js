@@ -1,30 +1,94 @@
 "use strict";
 
-var Start = require('./components/Start');
-var Pit = require('./components/Pit');
 var Grid = require('./Grid');
 var constants = require('./constants');
+var r = require('./random').getRandom();
+
+// Define components;
+var Start = require('./components/Start');
+var Finish = require('./components/Finish');
+var components = [
+    require('./components/Chimney'),
+    require('./components/Pit')
+];
 
 class Level {
-    constructor (w, h) {
-        this._grid = new Grid(w, h);
-        this._grid.initialize(constants.TYPE_FILL);
+    constructor (difficulty) {
+        this.difficulty = difficulty;
+
+        this.components = [];
+        this.addComponent(Start);
+
+        var avgNumComponents = Math.max(1, difficulty / 4);
+        var numComponents = r.i(avgNumComponents * 0.75, avgNumComponents * 1.25);
+
+        for (var i = 0; i < numComponents; i++) {
+            this.addComponent(r.choice(components), difficulty);
+        }
+
+        this.addComponent(Finish);
+
+        this.grid = null;
+    }
+
+    addComponent (cls) {
+        var c = new cls(this.difficulty);
+        c.draw();
+        this.components.push(c);
     }
 
     draw () {
-        var start = new Start(this._grid);
-        start.draw();
+        // Default to the "start" component's grid
+        var lastComponent = this.components[0];
+        this.grid = lastComponent.grid;
 
-        var pit = new Pit(this._grid);
-        pit.draw();
+        for (let i = 1; i < this.components.length; i++) {
+            let component = this.components[i];
+
+            let hallWidth = r.i(3, 6);
+
+            // Find the exit and entrance
+            let exit = this.grid.findExit();
+            let entrance = component.grid.findEntrance();
+
+            let totalWidth = component.grid.width + this.grid.width + hallWidth;
+            let offsetX = totalWidth - component.grid.width;
+
+            let offsetY = exit.floor - entrance.floor;
+            let totalHeight = Math.max(this.grid.height, component.grid.height) + Math.abs(offsetY);
+            let newGrid = new Grid(totalWidth, totalHeight);
+
+            if (offsetY < 0) { // New one is below old one
+                newGrid.add(this.grid, 0, -offsetY);
+                newGrid.add(component.grid, offsetX, 0);
+                newGrid.clear(
+                    this.grid.width,
+                    entrance.floor + 1,
+                    offsetX - 1,
+                    entrance.floor + 1 + Math.max(exit.height, entrance.height) - 1
+                );
+            } else { // New one is above old one
+                newGrid.add(this.grid, 0, 0);
+                newGrid.add(component.grid, offsetX, offsetY);
+                newGrid.clear(
+                    this.grid.width,
+                    exit.floor + 1,
+                    offsetX - 1,
+                    exit.floor + 1 + Math.max(exit.height, entrance.height) - 1
+                );
+            }
+
+            // Replace current grid with the new one and continue
+            this.grid = newGrid;
+        }
     }
 
     print () {
-        this._grid.print();
+        this.grid.print();
     }
 
     saveImage (path) {
-        this._grid.saveImage(path);
+        this.grid.saveImage(path);
     }
 }
 
