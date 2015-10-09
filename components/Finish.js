@@ -17,10 +17,12 @@
 
 */
 
+var Square = require('../Square');
 var BaseComponent = require('./BaseComponent');
 var constants = require('../constants');
 var r = require('../random');
 
+var Square = require('../Square');
 class Finish extends BaseComponent {
     constructor (difficulty) {
         super(difficulty);
@@ -44,7 +46,7 @@ class Finish extends BaseComponent {
 
         // Place exit door
         this.grid.fill(
-            constants.TYPE_FINISH,
+            new Square(constants.TYPE_FINISH),
             this.grid.width - 1 - this.PADDING_X - 2,
             this.PADDING_Y,
             this.grid.width - 1 - this.PADDING_X - 2 - 1,

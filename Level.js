@@ -8,11 +8,12 @@ var r = require('./random');
 var Start = require('./components/Start');
 var Finish = require('./components/Finish');
 var components = [
-    require('./components/Floaters'),
-    require('./components/Cave'),
-    require('./components/Chimney'),
+    require('./components/BasicTurn'),
+    //require('./components/Floaters'),
+    //require('./components/Cave'),
+    //require('./components/Chimney'),
     require('./components/Pit'),
-    require('./components/WidePit')
+    //require('./components/WidePit')
 ];
 
 class Level {

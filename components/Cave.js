@@ -20,6 +20,7 @@
 
 */
 
+var Square = require('../Square');
 var BaseComponent = require('./BaseComponent');
 var constants = require('../constants');
 var r = require('../random');
@@ -65,7 +66,7 @@ class Cave extends BaseComponent {
 
         // Place pit
         this.grid.fill(
-            constants.TYPE_DEATH,
+            new Square(constants.TYPE_DEATH),
             1,
             this.PADDING_Y,
             this.grid.width - 1 - 1,
@@ -92,7 +93,7 @@ class Cave extends BaseComponent {
             var height = r.i(2, 5);
 
             this.grid.fill(
-                constants.TYPE_FILL,
+                new Square(constants.TYPE_FILL),
                 x,
                 this.height - 1 - this.PADDING_Y,
                 x + width,
@@ -113,7 +114,7 @@ class Cave extends BaseComponent {
         // Place coins
         for (let i = 0; i < r.i(0, 3); i++) {
             this.grid.setRandom(
-                constants.TYPE_COIN,
+                new Square(constants.TYPE_COIN),
                 { yMin: this.PADDING_Y + this.PIT_DEPTH + this.PIT_DROP + 1}
             );
         }

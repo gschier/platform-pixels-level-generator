@@ -17,6 +17,7 @@
 
 */
 
+var Square = require('../Square');
 var BaseComponent = require('./BaseComponent');
 var constants = require('../constants');
 var r = require('../random');
@@ -44,7 +45,7 @@ class Start extends BaseComponent {
 
         // Place start position
         this.grid.set(
-            constants.TYPE_START,
+            new Square(constants.TYPE_START),
             this.PADDING_X + 1,
             this.PADDING_Y + 1
         );

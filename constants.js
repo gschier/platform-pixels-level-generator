@@ -22,6 +22,10 @@ x.TYPE_COIN = 'C'.yellow.bold;
 x.TYPE_START = 'S'.magenta.bold;
 x.TYPE_FINISH = 'F'.green.bold;
 
+// INTERNAL TYPES
+x.TYPE_EXIT = 'X'.magenta.bold;
+x.TYPE_ENTRANCE = 'E'.grey.bold;
+
 x.COLORS_VISUAL = {};
 x.COLORS_VISUAL[x.TYPE_FILL] = '#312F2F';
 x.COLORS_VISUAL[x.TYPE_DEATH] = '#D00'; // RED

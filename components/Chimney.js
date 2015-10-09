@@ -21,6 +21,7 @@
 
 */
 
+var Square = require('../Square');
 var BaseComponent = require('./BaseComponent');
 var constants = require('../constants');
 var r = require('../random');
@@ -90,7 +91,7 @@ class Chimney extends BaseComponent {
             yEnd = yStart + deathHeight - 1;
 
             this.grid.fill(
-                constants.TYPE_DEATH,
+                new Square(constants.TYPE_DEATH),
                 xStart,
                 yStart,
                 xEnd,
@@ -110,7 +111,7 @@ class Chimney extends BaseComponent {
                 this.grid.height - 1 - this.PADDING_Y - this.EXIT_HEIGHT
             );
 
-            this.grid.set(constants.TYPE_COIN, x, y);
+            this.grid.set(new Square(constants.TYPE_COIN), x, y);
         }
     }
 }
