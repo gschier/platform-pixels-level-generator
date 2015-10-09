@@ -19,7 +19,7 @@
 
 var BaseComponent = require('./BaseComponent');
 var constants = require('../constants');
-var r = require('../random').getRandom();
+var r = require('../random');
 
 class Start extends BaseComponent {
     constructor (difficulty) {

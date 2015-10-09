@@ -20,7 +20,7 @@
 
 var BaseComponent = require('./BaseComponent');
 var constants = require('../constants');
-var r = require('../random').getRandom();
+var r = require('../random');
 
 class Pit extends BaseComponent {
     constructor (difficulty) {
@@ -30,7 +30,13 @@ class Pit extends BaseComponent {
         this.PIT_DEPTH = r.i(1, 4);
         this.INNER_HEIGHT = r.i(8, 12);
 
-        this.width = r.i(8, 18);
+        // Choose width based on difficulty
+        if (this.isUnderMedium()) {
+            this.width = r.i(2, 3) * 2 + 1;
+        } else {
+            this.width = r.i(4, 7) * 2 + 1;
+        }
+
         this.height = this.INNER_HEIGHT + this.PADDING_Y * 2 + this.PIT_DEPTH;
     }
     draw () {
@@ -62,11 +68,11 @@ class Pit extends BaseComponent {
         );
 
         // Place coin
-        if (r.chance(80)) {
-            this.grid.set(
+        if (r.chance(30)) {
+            this.grid.setRandom(
                 constants.TYPE_COIN,
-                Math.ceil(this.grid.width / 2),
-                this.PADDING_Y + this.PIT_DEPTH + 5 );
+                this.PADDING_Y + this.PIT_DEPTH + 7
+            );
         }
     }
 }

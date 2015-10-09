@@ -3,6 +3,7 @@
 require('colors');
 var constants = require('./constants');
 var pathUtil = require('path');
+var r = require('./random');
 
 var gm = require('gm');
 
@@ -70,6 +71,30 @@ class Grid {
         }
 
         this._grid[this.height - y - 1][x] = t;
+    }
+
+    /**
+     * Set a random empty space to the given type
+     *
+     * @param t
+     */
+    setRandom (t, options) {
+        options = options || {};
+
+        var yMax = options.yMax || 1E9;
+        var yMin = options.yMin || -1E9;
+
+        var possibilities = [];
+        for (var y = this.height - 1; y >= 0.; y--) {
+            for (var x = 0; x < this.width; x++) {
+                if (y <= yMax && y >= yMin && this.get(x, y) === constants.TYPE_EMPTY) {
+                    possibilities.push([x, y]);
+                }
+            }
+        }
+
+        var coords = r.choice(possibilities);
+        this.set(t, coords[0], coords[1]);
     }
 
     /**
@@ -173,13 +198,79 @@ class Grid {
     }
 
     /**
+     * Crop the grid, leaving a certain amount of padding behind
+     *
+     * returns new grid instance
+     *
+     * @param pTop
+     * @param pRight
+     * @param pBottom
+     * @param pLeft
+     */
+    crop (pTop, pRight, pBottom, pLeft) {
+
+        var yFirst = this.height - 1;
+        var yLast = 0;
+        var xFirst = this.width - 1;
+        var xLast = 0;
+
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                if (this.get(x, y) !== constants.TYPE_FILL) {
+                    xFirst = Math.min(xFirst, x);
+                    yFirst = Math.min(yFirst, y);
+                }
+            }
+        }
+
+        for (let y = this.height - 1; y >= 0; y--) {
+            for (let x = this.width - 1; x >= 0; x--) {
+                if (this.get(x, y) !== constants.TYPE_FILL) {
+                    xLast = Math.max(xLast, x);
+                    yLast = Math.max(yLast, y);
+                }
+            }
+        }
+
+        var oldGrid = this.clone();
+
+        this.width = xLast - xFirst + pLeft + pRight + 1;
+        this.height = yLast - yFirst + pTop + pBottom + 1;
+
+        this.initialize(constants.TYPE_FILL);
+
+        this.add(
+            oldGrid,
+            -xFirst + pLeft,
+            -yFirst + pBottom
+        );
+    }
+
+    /**
+     * Clone the grid instance
+     */
+    clone () {
+        var newGrid = new Grid(this.width, this.height);
+        newGrid.add(this);
+        return newGrid;
+    }
+
+    /**
      * Print the grid in ascii
      */
     print () {
+        console.log('--');
         var r, t;
-        for (var y = this.height - 1; y >= 0.; y--) {
-            r = '';
-            for (var x = 0; x < this.width; x++) {
+
+        var numbers = '\\ ';
+        for (let x = 0; x < this.width; x++) {
+            numbers += ' ' + (x % 10);
+        }
+        console.log(numbers + '  /\n');
+
+        for (let y = this.height - 1; y >= 0.; y--) {
+            r = (y % 10) + '  ';
+            for (let x = 0; x < this.width; x++) {
                 t = this.get(x, y);
 
                 if (x === this._posX && y === this._posY) {
@@ -188,8 +279,18 @@ class Grid {
 
                 r += t + ' ';
             }
+            r += ' ' + (y % 10);
             console.log(r);
         }
+
+        numbers = '/ ';
+        for (let x = 0; x < this.width; x++) {
+            numbers += ' ' + (x % 10);
+        }
+
+        console.log('\n' + numbers + '  \\');
+
+        console.log('--');
     }
 
     /**

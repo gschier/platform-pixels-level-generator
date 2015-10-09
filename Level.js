@@ -2,14 +2,17 @@
 
 var Grid = require('./Grid');
 var constants = require('./constants');
-var r = require('./random').getRandom();
+var r = require('./random');
 
 // Define components;
 var Start = require('./components/Start');
 var Finish = require('./components/Finish');
 var components = [
+    require('./components/Floaters'),
+    require('./components/Cave'),
     require('./components/Chimney'),
-    require('./components/Pit')
+    require('./components/Pit'),
+    require('./components/WidePit')
 ];
 
 class Level {
@@ -45,7 +48,7 @@ class Level {
         for (let i = 1; i < this.components.length; i++) {
             let component = this.components[i];
 
-            let hallWidth = r.i(3, 6);
+            let hallWidth = r.i(1, 4);
 
             // Find the exit and entrance
             let exit = this.grid.findExit();
@@ -55,7 +58,10 @@ class Level {
             let offsetX = totalWidth - component.grid.width;
 
             let offsetY = exit.floor - entrance.floor;
-            let totalHeight = Math.max(this.grid.height, component.grid.height) + Math.abs(offsetY);
+
+            // Calculate new height
+            // TODO: Optimize this
+            let totalHeight = component.grid.height + this.grid.height + Math.abs(offsetY);
             let newGrid = new Grid(totalWidth, totalHeight);
 
             if (offsetY < 0) { // New one is below old one
@@ -80,7 +86,20 @@ class Level {
 
             // Replace current grid with the new one and continue
             this.grid = newGrid;
+            this.grid.crop(1, 0, 1, 1);
         }
+
+        this.grid.crop(10, 10, 10, 10);
+
+        // Make sure the final grid is at least x by y
+
+        var finalGrid = new Grid(
+            Math.max(40, this.grid.width),
+            Math.max(20, this.grid.height)
+        );
+
+        finalGrid.add(this.grid);
+        this.grid = finalGrid;
     }
 
     print () {
