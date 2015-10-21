@@ -17,23 +17,22 @@ x.DIFFICULTY_INSANE = 40;
 
 x.TYPE_EMPTY = '■'.grey;
 x.TYPE_FILL = '☐'.white.bold;
+x.TYPE_DISSOLVE = '☐'.blue.bold;
 x.TYPE_DEATH = 'D'.red.bold;
 x.TYPE_COIN = 'C'.yellow.bold;
 x.TYPE_START = 'S'.magenta.bold;
 x.TYPE_FINISH = 'F'.green.bold;
 
-// INTERNAL TYPES
-x.TYPE_EXIT = 'X'.magenta.bold;
-x.TYPE_ENTRANCE = 'E'.grey.bold;
-
 x.COLORS_VISUAL = {};
 x.COLORS_VISUAL[x.TYPE_FILL] = '#312F2F';
+x.COLORS_VISUAL[x.TYPE_DISSOLVE] = '#312F2F';
 x.COLORS_VISUAL[x.TYPE_DEATH] = '#D00'; // RED
 x.COLORS_VISUAL[x.TYPE_COIN] = '#DD0'; // YELLOW
 
 x.COLORS_META = {};
 x.COLORS_META[x.TYPE_DEATH] = '#F00'; // RED
-x.COLORS_META[x.TYPE_START] = '#F0F'; // TEAL
+x.COLORS_META[x.TYPE_START] = '#F0F'; // PINK
+x.COLORS_META[x.TYPE_DISSOLVE] = '#0FF'; // TEAL
 x.COLORS_META[x.TYPE_FINISH] = '#0F0'; // GREEN
 x.COLORS_META[x.TYPE_COIN] = '#FF0'; // YELLOW
 

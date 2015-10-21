@@ -329,7 +329,7 @@ class Grid {
         var img_visual = gm(this.width, this.height, 'transparent');
         var img_meta = gm(this.width, this.height, 'transparent');
 
-        var s, c;
+        var s, c, sNext;
         var startX, nextType;
 
         for (var y = this.height - 1; y >= 0; y--) {
@@ -337,7 +337,8 @@ class Grid {
 
             for (var x = 0; x < this.width; x++) {
                 s = this.get(x, y);
-                nextType = this.get(x + 1, y).type;
+                sNext = this.get(x + 1, y);
+                nextType = sNext === null ? 'not-a-real-type' : sNext.type;
 
                 if (s.is(nextType)) {
                     continue;

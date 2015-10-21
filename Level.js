@@ -7,14 +7,34 @@ var r = require('./random');
 // Define components;
 var Start = require('./components/Start');
 var Finish = require('./components/Finish');
-var components = [
-    require('./components/BasicTurn'),
-    //require('./components/Floaters'),
-    //require('./components/Cave'),
-    //require('./components/Chimney'),
-    require('./components/Pit'),
-    //require('./components/WidePit')
-];
+var components = {
+    easy: [
+        //require('./components/BasicTurn'),
+        require('./components/Pit'),
+        require('./components/Pit'),
+        require('./components/Pit'),
+        require('./components/Chimney'),
+        require('./components/WidePit'),
+        require('./components/Floaters')
+    ],
+    medium: [
+        require('./components/Pit'),
+        require('./components/Chimney'),
+        require('./components/WidePit'),
+        require('./components/WidePit'),
+        require('./components/Floaters'),
+        require('./components/Cave')
+    ],
+    hard: [
+        require('./components/Chimney'),
+        require('./components/Chimney'),
+        require('./components/WidePit'),
+        require('./components/WidePit'),
+        require('./components/Floaters'),
+        require('./components/Cave'),
+        require('./components/Cave')
+    ]
+};
 
 class Level {
     constructor (difficulty) {
@@ -26,8 +46,16 @@ class Level {
         var avgNumComponents = Math.max(1, difficulty / 4);
         var numComponents = r.i(avgNumComponents * 0.75, avgNumComponents * 1.25);
 
+        var toChoose;
         for (var i = 0; i < numComponents; i++) {
-            this.addComponent(r.choice(components), difficulty);
+            if (difficulty < 10) {
+                toChoose = components.easy;
+            } else if (difficulty < 20) {
+                toChoose = components.medium;
+            } else {
+                toChoose = components.hard;
+            }
+            this.addComponent(r.choice(toChoose), difficulty);
         }
 
         this.addComponent(Finish);

@@ -92,10 +92,10 @@ class Floaters extends BaseComponent {
                 width = r.i(1, 4);
             }
 
-            var height = r.i(1, 2);
+            var height = 0;
 
             this.grid.fill(
-                new Square(constants.TYPE_FILL),
+                new Square(constants.TYPE_DISSOLVE),
                 x,
                 y,
                 x + width,
