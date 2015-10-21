@@ -38,10 +38,15 @@ var argv = yargs
         })
         .help('help')
     })
+    .help('help')
     .argv;
 
-console.log(argv);
-console.log();
+var command = argv._[0];
+
+if (!command) {
+    yargs.showHelp();
+    return;
+}
 
 if (argv.seed) {
     require('./random').setSeed(argv.seed);
@@ -83,4 +88,3 @@ for (var i = 0; i < argv.count; i++) {
 //if (i === 1) {
 //    level.print();
 //}
-

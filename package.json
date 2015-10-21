@@ -1,13 +1,27 @@
 {
-  "name": "level-gen",
-  "version": "0.1.0",
-  "main": "main.js",
-  "dependencies": {
-    "chance": "^0.7.7",
-    "colors": "^1.1.2",
-    "gm": "^1.19.0",
-    "mkdirp": "^0.5.1",
-    "optimist": "^0.6.1",
-    "yargs": "^3.27.0"
-  }
+    "name": "platform-pixels-level-generator",
+    "description": "A command line tool used to generate levels",
+    "version": "0.5.1",
+    "license": "MIT",
+    "keywords": [
+        "gaming",
+        "level generation",
+        "procedural"
+    ],
+    "author": "Gregory Schier <greg@schier.co>",
+    "main": "main.js",
+    "bin": {
+        "pplg": "./bin/pplg"
+    },
+    "dependencies": {
+      "chance": "^0.7.7",
+      "colors": "^1.1.2",
+      "gm": "^1.19.0",
+      "mkdirp": "^0.5.1",
+      "optimist": "^0.6.1",
+      "yargs": "^3.27.0"
+    },
+    "engines" : {
+        "node" : ">=0.12"
+    }
 }
